@@ -34,16 +34,6 @@ groups_data = load_questions_from_excel(questions_file)
 def index():
     return render_template("index.html", groups=groups_data)
 
-@app.route('/test_form', methods=['GET', 'POST'])
-def test_form():
-    return render_template("test_form.html")
-
-@app.route('/test_form_submit', methods=['POST'])
-def test_form_sumbit():
-    print(request)
-    return render_template("test_form.html")
-
-
 @app.route('/submit', methods=['POST'])
 def submit():
     data = request.json
