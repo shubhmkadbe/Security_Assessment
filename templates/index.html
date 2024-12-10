@@ -1,57 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
+
     
+    <link rel="icon" href="../static/images/favicon.webp" type="image/png">
+
     <title>Security Assessment</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .group { 
-            margin: 20px 0; 
-            padding: 10px; 
-            background-color: #f2f2f2; 
-            border: 1px solid #ddd; 
-            cursor: pointer;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .group:hover {
-            background-color: #e0e0e0;
-        }
-        .questions {
-            display: none;
-            padding-left: 20px;
-        }
-        .question-item {
-            margin-bottom: 10px;
-        }
-        #surveyForm {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/css/index.css">
 </head>
+
 <body>
     <form id="surveyForm">
-        <h1>Security Assessment</h1>
+        <div class="inline-package">
+            <img class="inline-image" src="../static/images/favicon.webp" width="150px">
+        <h1 class="inline-heading">Security Assessment</h1>
+          </div>
+
+        
 
         <div id="groupList">
             {% for group_name, group_data in groups.items() %}
-            <div class="group" onclick="toggleQuestions('{{ group_name }}')">
-                <h3>{{ group_name }}</h3>
-            </div>
-            <div class="questions" id="{{ group_name }}">
-                {% for question in group_data.questions %}
-                <div class="question-item">
-                    <p>{{ question['Security Controls'] }}</p>
-                    <label><input type="radio" name="{{ question['Security Controls'] }}" value="Yes" required> Yes</label>
-                    <label><input type="radio" name="{{ question['Security Controls'] }}" value="No"> No</label>
+            <div class="tile" onclick="toggleFlip('{{ group_name }}')">
+                <div class="flip-container" id="flip-{{ group_name }}">
+                    <!-- Front side -->
+                    <div class="front">
+                        <h3>{{ group_name }}</h3>
+                    </div>
+                    <!-- Back side -->
+                    <div class="back">
+                        {% for question in group_data.questions %}
+                        <div class="question-item">
+                            <p>{{ question['Security Controls'] }}</p>
+                            <label>
+                                <input type="radio" name="{{ question['Security Controls'] }}" value="Yes" required> Yes
+                            </label>
+                            <label>
+                                <input type="radio" name="{{ question['Security Controls'] }}" value="No"> No
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
-                {% endfor %}
             </div>
             {% endfor %}
         </div>
@@ -59,85 +55,10 @@
         <button type="submit">Submit</button>
     </form>
 
-    <button id="downloadBtn" disabled>Download</button>
+    <button id="downloadBtn" style="display: none;" disabled>Download</button>
     <canvas id="resultsChart" width="400" height="200"></canvas>
 
-    <script>
-        document.getElementById('surveyForm').addEventListener('submit', async function (event) {
-            
-            event.preventDefault();
-            // 
-            console.log('Submit button is pressed');
-
-            // Collect form data
-            const formData = new FormData(event.target);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            // Submit responses to the backend
-            const response = await fetch('/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            const groupScores = await response.json();
-
-            // Generate the chart
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(groupScores),
-                    datasets: [{
-                        label: 'Group Scores (Normalized to 100)',
-                        data: Object.values(groupScores),
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: { beginAtZero: true, max: 100 }
-                    }
-                }
-            });
-
-            // Enable download button
-            document.getElementById('downloadBtn').disabled = false;
-        });
-
-        // Toggle visibility of questions when a group is clicked
-        function toggleQuestions(groupName) {
-            const questionsDiv = document.getElementById(groupName);
-            const isVisible = questionsDiv.style.display === 'block';
-            questionsDiv.style.display = isVisible ? 'none' : 'block';
-        }
-    </script>
-
-    <script>
-        document.getElementById('downloadBtn').addEventListener('click', async function () {
-        // Use html2canvas to capture the canvas element
-        const canvasElement = document.getElementById('resultsChart');
-        const canvasDataURL = canvasElement.toDataURL('image/png'); // Get the canvas as an image
-
-        // Create a new PDF document using jsPDF
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF();
-
-        // Set PDF dimensions based on the canvas size
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvasElement.height * pdfWidth) / canvasElement.width;
-
-        // Add the image to the PDF
-        pdf.addImage(canvasDataURL, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-        // Download the PDF
-        pdf.save('ResultChart.pdf');
-    });
-    </script>
+    <script src="../static/script/main.js"></script>
 </body>
+
 </html>
