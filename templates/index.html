@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    
+
     <link rel="icon" href="../static/images/favicon.webp" type="image/png">
 
     <title>Security Assessment</title>
@@ -20,24 +20,28 @@
     <div class="inline-package">
         <img class="inline-image" src="../static/images/favicon.webp" width="150px">
         <h1 class="inline-heading">Security Assessment</h1>
-      </div>
+    </div>
     <form id="surveyForm">
 
 
 
         <div id="groupList">
             {% for group_name, group_data in groups.items() %}
+            
+            
+            
             <div class="tile" onclick="toggleFlip('{{ group_name }}')">
                 <div class="flip-container" id="flip-{{ group_name }}">
                     <!-- Front side -->
                     <div class="front">
-                        <h3>{{ group_name }}</h3>
+                        <h2>{{ group_name }}</h2>
                     </div>
                     <!-- Back side -->
                     <div class="back">
+                        <h2> {{ group_name }} </h2>
                         {% for question in group_data.questions %}
                         <div class="question-item">
-                            <p>{{ question['Security Controls'] }}</p>
+                            <p>{{ question['Security Controls'] }} <br>
                             <label>
                                 <input type="radio" name="{{ question['Security Controls'] }}" value="Yes" required> Yes
                             </label>
@@ -45,12 +49,17 @@
                                 <input type="radio" name="{{ question['Security Controls'] }}" value="No"> No
                             </label>
                         </div>
+                    </p>
                         {% endfor %}
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+
+
+
+
 
         <button type="submit">Submit</button>
     </form>
