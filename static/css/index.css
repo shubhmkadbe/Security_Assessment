@@ -1,6 +1,7 @@
 .inline-package {
-    display: inline-flex;  /* Align image and heading inline */
     align-items: center;   /* Vertically center the items */
+    justify-content: center;
+    display: flex;
   }
   
   .inline-image {
@@ -11,7 +12,7 @@
   
   .inline-heading {
     margin: 20;             /* Remove default margin */
-    font-size: 18px;       /* Adjust font size */
+    font-size: 38px;       /* Adjust font size */
   }
 
 
